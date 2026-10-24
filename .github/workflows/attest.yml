@@ -1,0 +1,31 @@
+# docs/ci.md W18: a build's provenance attested on GitHub Actions through Sigstore's public-good
+# instance (this repository is public), for kiln to read back and verify.
+name: attest
+on:
+  push:
+    branches: [attest]
+permissions:
+  contents: read
+jobs:
+  attest:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - name: Make the artifact
+        run: printf 'kiln W18 probe: %s %s\n' "$GITHUB_SHA" "$GITHUB_RUN_ID" > artifact.txt && sha256sum artifact.txt
+      - name: Attest its provenance
+        id: attest
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: artifact.txt
+      - name: Keep the artifact and its bundle
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: attested
+          path: |
+            artifact.txt
+            ${{ steps.attest.outputs.bundle-path }}
+      - run: echo "PROBE attestation-id=${{ steps.attest.outputs.attestation-id }} url=${{ steps.attest.outputs.attestation-url }}"
