@@ -1,0 +1,6 @@
+# F-22: level 0 of the nesting probe (make_reusable.py).
+name: r00
+on: workflow_call
+jobs:
+  next:
+    uses: ./.github/workflows/r01.yml

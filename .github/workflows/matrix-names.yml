@@ -1,0 +1,13 @@
+# F-22 (docs/ci.md W22-AC03, A.8): the name a matrix leg gets from nested and empty values (an
+# object's values and a list's in turn, empty ones left out?). What's compared is the job's name.
+name: probe matrix names
+on: [push, workflow_dispatch]
+jobs:
+  names:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - { obj: { a: x, b: "", c: [y, null] }, empty: "", none: null, last: 2.50 }
+    steps:
+      - run: echo "PROBE names.ran=yes"

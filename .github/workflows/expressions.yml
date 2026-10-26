@@ -34,6 +34,8 @@ jobs:
           echo "PROBE number.nan=${{ fromJSON('"abc"') == 0 }}"
   truthiness:
     runs-on: ubuntu-latest
+    env:
+      F: 'false'
     steps:
       - if: ${{ 'false' }}
         run: echo "PROBE if.string-false=ran"
@@ -57,4 +59,7 @@ jobs:
         run: echo "PROBE if.case-insensitive=ran"
       - if: ${{ 1 == '1' }}
         run: echo "PROBE if.number-string=ran"
+      # A context's 'false' against the literal one above: a value, not the condition's text.
+      - if: ${{ env.F }}
+        run: echo "PROBE if.context-string-false=ran"
       - run: echo "PROBE if.done=yes"
